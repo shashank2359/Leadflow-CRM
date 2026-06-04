@@ -1,6 +1,19 @@
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
+import { CSVLink } from "react-csv";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import api from "../services/api";
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 function Dashboard() {
     const token = localStorage.getItem("token");
@@ -16,12 +29,57 @@ if (!token) {
     converted: 0,
     lost: 0,
   });
+  const chartData = {
+  labels: [
+    "New",
+    "Contacted",
+    "Qualified",
+    "Converted",
+    "Lost",
+  ],
+  datasets: [
+    {
+      data: [
+        stats.newLeads,
+        stats.contacted,
+        stats.qualified,
+        stats.converted,
+        stats.lost,
+      ],
+      backgroundColor: [
+        "#3B82F6", 
+        "#F59E0B", 
+        "#10B981", 
+        "#8B5CF6", 
+        "#EF4444", 
+      ],
+      borderWidth: 2,
+    },
+  ],
+};
+const options = {
+  plugins: {
+    legend: {
+      position: "bottom",
+    },
+  },
+};
 
   const [leads, setLeads] = useState([]);
+  const csvData = leads.map((lead) => ({
+  Name: lead.name,
+  Email: lead.email,
+  Phone: lead.phone,
+  Company: lead.company,
+  Status: lead.status,
+  Notes: lead.notes,
+  CreatedDate: new Date(lead.createdAt).toLocaleDateString(),}));
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [editingId, setEditingId] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const [formData, setFormData] = useState({
   name: "",
   email: "",
@@ -38,16 +96,16 @@ const fetchData = async () => {
       setStats(statsRes.data);
 
       // Fetch leads
-      const leadsRes = await api.get("/leads");
-
+      const leadsRes = await api.get(`/leads?page=${page}&limit=5`);
       setLeads(leadsRes.data.leads);
+        setPages(leadsRes.data.pages);
 
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
- useEffect(() => {fetchData();}, []);
+ useEffect(() => {fetchData();}, [page]);
 
 const handleChange = (e) => {
   setFormData({
@@ -201,6 +259,16 @@ const updateStatus = async (id) => {
           </div>
         </div>
 
+        <div className="bg-white p-6 rounded shadow mt-6">
+  <h2 className="text-xl font-semibold mb-4">
+    Lead Analytics
+  </h2>
+
+  <div className="max-w-md mx-auto">
+    <Pie data={chartData} options={options} />
+  </div>
+</div>
+
         <div className="mt-8 mb-4">
   <div className="bg-white p-4 rounded shadow mb-6">
   <h2 className="text-xl font-semibold mb-4">
@@ -323,9 +391,19 @@ const updateStatus = async (id) => {
         
         {/* Leads Table */}
         <div className="mt-8 bg-white rounded shadow p-4">
-          <h2 className="text-xl font-semibold mb-4">
-            Leads
-          </h2>
+         <div className="flex justify-between items-center mb-4">
+  <h2 className="text-xl font-semibold">
+    Leads
+  </h2>
+
+  <CSVLink
+    data={csvData}
+    filename="leadflow-leads.csv"
+    className="bg-green-600 text-white px-4 py-2 rounded"
+  >
+    Export CSV
+  </CSVLink>
+</div>
 
           <table className="w-full">
             <thead>
@@ -397,6 +475,29 @@ const updateStatus = async (id) => {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-center gap-4 mt-4">
+
+  <button
+    disabled={page === 1}
+    onClick={() => setPage(page - 1)}
+    className="bg-gray-300 px-4 py-2 rounded"
+  >
+    Previous
+  </button>
+
+  <span className="font-bold">
+    Page {page} of {pages}
+  </span>
+
+  <button
+    disabled={page === pages}
+    onClick={() => setPage(page + 1)}
+    className="bg-blue-500 text-white px-4 py-2 rounded"
+  >
+    Next
+  </button>
+
+</div>
         </div>
       </div>
     </div>
