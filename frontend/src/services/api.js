@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://leadflow-crm-ekxa.onrender.com/api",
 });
 
-// Automatically attach JWT token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
