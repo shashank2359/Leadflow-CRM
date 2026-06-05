@@ -159,7 +159,7 @@ GitHub:
 https://github.com/shashank2359
 
 LinkedIn:
-(Add your LinkedIn profile here)
+https://www.linkedin.com/in/shashanksengar/
 
 ---
 
