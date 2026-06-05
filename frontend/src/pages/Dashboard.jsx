@@ -16,6 +16,7 @@ ChartJS.register(
 );
 
 function Dashboard() {
+    const [darkMode, setDarkMode] = useState(false);
     const token = localStorage.getItem("token");
 
 if (!token) {
@@ -202,20 +203,32 @@ const updateStatus = async (id) => {
 };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div
+  className={
+    darkMode
+      ? "min-h-screen bg-gray-900 text-white"
+      : "min-h-screen bg-gray-100"}>
       {/* Navbar */}
-      <nav className="bg-blue-600 text-white p-4 shadow flex justify-between items-center">
+      <nav
+  className={
+    darkMode
+      ? "bg-black text-white p-4 shadow flex justify-between items-center"
+      : "bg-blue-600 text-white p-4 shadow flex justify-between items-center"}>
   <h1 className="text-2xl font-bold">
     LeadFlow CRM
   </h1>
 
   <button
+  onClick={() => setDarkMode(!darkMode)}
+  className="bg-gray-700 px-4 py-2 rounded mr-2">
+  {darkMode ? "☀️ Light" : "🌙 Dark"}
+  </button>
+
+  <button
     onClick={() => {
       localStorage.removeItem("token");
-      window.location.href = "/login";
-    }}
-    className="bg-red-500 px-4 py-2 rounded"
-  >
+      window.location.href = "/login";}}
+    className="bg-red-500 px-4 py-2 rounded">
     Logout
   </button>
 </nav>
@@ -228,38 +241,38 @@ const updateStatus = async (id) => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">Total Leads</h3>
             <p className="text-3xl font-bold">{stats.total}</p>
           </div>
 
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">New Leads</h3>
             <p className="text-3xl font-bold">{stats.newLeads}</p>
           </div>
 
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">Contacted</h3>
             <p className="text-3xl font-bold">{stats.contacted}</p>
           </div>
 
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">Qualified</h3>
             <p className="text-3xl font-bold">{stats.qualified}</p>
           </div>
 
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">Converted</h3>
             <p className="text-3xl font-bold">{stats.converted}</p>
           </div>
 
-          <div className="bg-white p-4 rounded shadow">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow`}>
             <h3 className="text-gray-500">Lost</h3>
             <p className="text-3xl font-bold">{stats.lost}</p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded shadow mt-6">
+        <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-6 rounded shadow mt-6`}>
   <h2 className="text-xl font-semibold mb-4">
     Lead Analytics
   </h2>
@@ -270,7 +283,7 @@ const updateStatus = async (id) => {
 </div>
 
         <div className="mt-8 mb-4">
-  <div className="bg-white p-4 rounded shadow mb-6">
+  <div className={`${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded shadow mb-6`}>
   <h2 className="text-xl font-semibold mb-4">
   {editingId ? "Edit Lead" : "Add Lead"}
 </h2>
@@ -373,12 +386,12 @@ const updateStatus = async (id) => {
     placeholder="Search by name, email or company..."
     value={search}
     onChange={(e) => setSearch(e.target.value)}
-    className="w-full p-3 border rounded-lg bg-white"/>
+    className={`w-full p-3 border rounded-lg ${darkMode ? "bg-gray-800 text-white" : "bg-white"}`}/>
 
   <select
     value={statusFilter}
     onChange={(e) => setStatusFilter(e.target.value)}
-    className="p-3 border rounded-lg bg-white">
+    className={`p-3 border rounded-lg ${darkMode ? "bg-gray-800 text-white" : "bg-white"}`}>
     <option value="">All Statuses</option>
     <option value="New">New</option>
     <option value="Contacted">Contacted</option>
@@ -390,7 +403,8 @@ const updateStatus = async (id) => {
 </div>
         
         {/* Leads Table */}
-        <div className="mt-8 bg-white rounded shadow p-4">
+        <div
+  className={`mt-8 ${darkMode ? "bg-gray-800 text-white" : "bg-white"} rounded shadow p-4`}>
          <div className="flex justify-between items-center mb-4">
   <h2 className="text-xl font-semibold">
     Leads
